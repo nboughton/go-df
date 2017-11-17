@@ -29,13 +29,13 @@ const (
 // struct methods to get the appropriate values in whatever size increment they wish.
 // Values are stored as float64s in order to allow for a reasonable degree of accuracy when
 // dealing with large value numbers i.e 1.7GB, 3.4TB etc...
-func NewDf(mountPoint string) (f *DiskFree, err error) {
+func NewDf(mountPoint string) (f DiskFree, err error) {
 	s := syscall.Statfs_t{}
 	if err = syscall.Statfs(mountPoint, &s); err != nil {
 		return f, err
 	}
 
-	f = &DiskFree{
+	f = DiskFree{
 		total: float64(s.Blocks) * float64(s.Bsize),
 		used:  float64(s.Blocks-s.Bfree) * float64(s.Bsize),
 	}
@@ -51,7 +51,7 @@ func NewDf(mountPoint string) (f *DiskFree, err error) {
 // Example:
 //    d, _ := df.NewDf("/mnt/fs")
 //    fmt.Println(df.Total(df.GB))
-func (df *DiskFree) Total(s size) float64 {
+func (df DiskFree) Total(s size) float64 {
 	return df.total / float64(s)
 }
 
@@ -60,7 +60,7 @@ func (df *DiskFree) Total(s size) float64 {
 // Example:
 //    d, _ := df.NewDf("/mnt/fs")
 //    fmt.Println(df.Used(df.GB))
-func (df *DiskFree) Used(s size) float64 {
+func (df DiskFree) Used(s size) float64 {
 	return df.used / float64(s)
 }
 
@@ -69,11 +69,11 @@ func (df *DiskFree) Used(s size) float64 {
 // Example:
 //    d, _ := df.NewDf("/mnt/fs")
 //    fmt.Println(df.Avail(df.GB))
-func (df *DiskFree) Avail(s size) float64 {
+func (df DiskFree) Avail(s size) float64 {
 	return df.avail / float64(s)
 }
 
 // PercentUsed returns the percentage of space used as an int
-func (df *DiskFree) PercentUsed() int {
+func (df DiskFree) PercentUsed() int {
 	return df.percentUsed
 }
